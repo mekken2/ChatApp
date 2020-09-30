@@ -5,7 +5,7 @@ from person import Person
 
 # GLOBAL CONSTANTS
 HOST = 'localhost'
-PORT = 5500
+PORT = 5000
 ADDR = (HOST, PORT)
 MAX_CONNECTIONS = 10
 BUFSIZ = 512
@@ -24,7 +24,7 @@ def broadcast(msg,name):
     """
     for person in persons:
         client = person.client
-        client.send(bytes(name + ":", "utf8") + msg)
+        client.send(bytes(name, "utf8") + msg)
 
 def client_communication(person):
     """
@@ -36,8 +36,9 @@ def client_communication(person):
 
     # get person's name
     name = client.recv(BUFSIZ).decode("utf8")
-    msg = f"{name} has joined the chat"
-    broadcast(msg)  # broadcast welcome message
+    person.set_name(name)
+    msg = bytes(f"{name} has joined the chat!","utf8")
+    broadcast(msg,name)  # broadcast welcome message
 
     while True:
         try:
@@ -50,7 +51,7 @@ def client_communication(person):
                 persons.remove(person)
                 break
             else:
-                broadcast(msg, name)
+                broadcast(msg, name+": ")
 
         except Exception as e:
             print("[EXCEPTION]", e)
